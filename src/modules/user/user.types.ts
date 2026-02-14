@@ -43,3 +43,8 @@ export interface interviewHistory{
     userID:String,
     history:resultRecord[],
 }
+
+
+export interface company{
+    
+}
