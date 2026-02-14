@@ -1,4 +1,3 @@
-// routes
 import express from 'express';
 
 export const Userroute = express.Router();
