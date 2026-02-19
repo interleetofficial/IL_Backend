@@ -1,4 +1,4 @@
-import type { User, UserSignupData } from "./user.types.js";
+import type { User,UserSignupData } from "./user.types.js";
 import { db } from "../../config/firebaseconfig.js";
 import crypto from "crypto"
 
@@ -45,4 +45,17 @@ export const UserSignup = async (userData : UserSignupData)=>{
     } catch (error:any) {
         throw new Error("Error Occured!",error);
     }
+}
+
+
+export const UserLogin = async (email:string)=>{
+    try {
+        const userdata = await UserCollection.where("email","==",email).get();
+        if(userdata.empty){
+            throw new Error("User not found!");
+        }
+        return userdata.docs[0]?.data();
+    } catch (error:any) {
+        throw new Error("User not found!");
+    } 
 }

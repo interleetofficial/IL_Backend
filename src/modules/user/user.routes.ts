@@ -1,11 +1,12 @@
 import express from 'express';
+import { userLoginController, userSignupController } from './user.controller.js';
 
-export const Userroute = express.Router();
+export const UserRouter = express.Router();
 
-Userroute.post('/signup');
-Userroute.post('/login');
-Userroute.post('/verifyOTP');
-Userroute.get('/profile');
-Userroute.put('/updateProfile');
-Userroute.get('/resetPassword');
-Userroute.put('/changePassword');
+UserRouter.post('/signup',userSignupController);
+UserRouter.post('/login',userLoginController);
+// UserRouter.post('/verifyOTP');
+// UserRouter.get('/profile');
+// UserRouter.put('/updateProfile');
+// UserRouter.get('/resetPassword');
+// UserRouter.put('/changePassword');
