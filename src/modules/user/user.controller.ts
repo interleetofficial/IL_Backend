@@ -1,9 +1,13 @@
 import type { Request, Response } from "express";
-import { UserLogin, UserSignup } from "./user.service.js";
+import { UserLogin, UserSignup, verifyOTP } from "./user.service.js";
 import { UserSignupSchema } from "./user.schema.js";
 import { generateOTP } from "../../utils/generateotp.js";
 import { db } from "../../config/firebaseconfig.js";
 import { sendotp } from "../../utils/otpsender.js";
+import jwt from 'jsonwebtoken'
+import dotenv from "dotenv";
+
+dotenv.config()
 
 export const userSignupController = async (req: Request, res: Response) => {
     const UserSignupData = UserSignupSchema.safeParse(req.body);
@@ -31,7 +35,7 @@ export const userLoginController = async (req: Request, res: Response) => {
     }
     try {
         const otpCollection = db.collection("OTP_Verifications");
-        await UserLogin(email);
+        const userdata = await UserLogin(email);
         const otp = generateOTP();
         await sendotp(email,otp);
         const expiresAt = Date.now() + 5 * 60 * 1000;
@@ -39,6 +43,7 @@ export const userLoginController = async (req: Request, res: Response) => {
             otp,
             email,
             expiresAt,
+            userid:userdata?.UserID
         });
         res.json({
             message: "OTP sent to email!"
@@ -47,5 +52,27 @@ export const userLoginController = async (req: Request, res: Response) => {
         res.json({
             error: error.message
         });
+    }
+}
+
+
+export const verifyOTPcontroller = async(req:Request, res:Response)=>{
+
+    const {email,otp} = req.body;
+    try {
+        const verifyotpresult = await verifyOTP(email,otp);
+        if(verifyotpresult)
+        {
+            const token  = jwt.sign({
+                email: verifyotpresult.email,
+                userid: verifyotpresult.userid,
+                }, process.env.JWT_SECRET!, { expiresIn: '1y' });
+            res.json({token:token})
+        }
+        
+    } catch (error) {
+        res.json({
+            error: "Invalid OTP!"
+        })
     }
 }

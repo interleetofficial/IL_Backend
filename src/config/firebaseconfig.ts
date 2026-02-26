@@ -1,7 +1,7 @@
 import admin from "firebase-admin";
 import { readFileSync } from "fs";
 const serviceAccount = JSON.parse(
-  readFileSync("C:/Users/dgour/OneDrive/Desktop/Interleet/IL_Backend/firebaseconfig.json", "utf8")
+  readFileSync("C:/Users/sagni/VS/MAJOR PROJECTS/InterLeet/IL_Backend/firebaseconfig.json", "utf8")
 );
 
 admin.initializeApp({

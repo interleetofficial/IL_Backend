@@ -51,11 +51,41 @@ export const UserSignup = async (userData : UserSignupData)=>{
 export const UserLogin = async (email:string)=>{
     try {
         const userdata = await UserCollection.where("email","==",email).get();
+
         if(userdata.empty){
             throw new Error("User not found!");
         }
+        db.collection("OTP_Verifications")
+        .where("email", "==", email)
+        .get()
+        .then((snap) => {
+            snap.forEach((doc) => doc.ref.delete());
+        });
         return userdata.docs[0]?.data();
     } catch (error:any) {
         throw new Error("User not found!");
     } 
+}
+
+
+export const verifyOTP = async (email:string, otp:string)=>{
+    try {
+        const result = await db.collection("OTP_Verifications")
+        .where("email", "==", email)
+        .get();
+
+        const duplicateResult = result;
+
+        if (result.empty) {
+            throw new Error("OTP not found!");
+        }
+        if(result.docs[0]?.data().otp == otp)
+        {
+            result.forEach((doc)=>{doc.ref.delete()});
+            return duplicateResult.docs[0]?.data();
+        }
+        return false;
+    } catch (error) {
+        throw new Error("Internal Server Error!!")
+    }
 }
