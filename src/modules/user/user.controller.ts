@@ -9,6 +9,14 @@ import dotenv from "dotenv";
 
 dotenv.config()
 
+declare global {
+    namespace Express {
+        interface Request {
+            user?: any;
+        }
+    }
+}
+
 export const userSignupController = async (req: Request, res: Response) => {
     const UserSignupData = UserSignupSchema.safeParse(req.body);
     if (UserSignupData.success) {
@@ -74,5 +82,22 @@ export const verifyOTPcontroller = async(req:Request, res:Response)=>{
         res.json({
             error: "Invalid OTP!"
         })
+    }
+}
+
+export const getProfile = async(req:Request,res:Response)=>
+{
+    const profile = req.user;
+    
+    try {
+        const result = await db.collection("UserProfile")
+        .where("UserID","==", profile.userid)
+        .get()
+        if(result.empty)
+            res.json({message:"User not found!!"})
+        return res.send(result.docs[0]?.data())
+
+    } catch (error) {
+        res.json({message:"Profile cannot be fetched!!"});
     }
 }
