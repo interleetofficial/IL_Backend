@@ -101,3 +101,25 @@ export const getProfile = async(req:Request,res:Response)=>
         res.json({message:"Profile cannot be fetched!!"});
     }
 }
+
+
+export const updateProfile = async(req:Request,res:Response)=>
+{
+    const profile = req.user;
+    
+    try {
+        const result = await db.collection("UserProfile")
+        .where("UserID","==", profile.userid)
+        .get()
+
+        const updateData = req.body;
+
+        const docRef = result.docs[0]?.ref;
+        await docRef?.update(updateData);
+
+        res.json({ message: "Updated successfully" });
+
+    } catch (error) {
+        res.json({message:"Profile cannot be fetched!!"});
+    }
+}
